@@ -1,0 +1,225 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>打字游戏</title>
+
+</head>
+<script src="字符串.js"></script>
+<script src="js/jquery-1.12.0.js"></script>
+<style>
+     *{
+        padding:0;
+        margin:0;
+     }
+     body,html{
+        height: 100%
+     }
+    .start{
+        width:1366px;
+        height:643px;
+        position: absolute;
+        top:0;
+        bottom:0;
+        left:0;
+        right:0;
+        background:url(images/loading2.jpg);
+        z-index: 10;
+        display: block;
+    }
+    #start{
+        width:400px;
+        float: left;
+        display: block;
+        position: absolute;
+        bottom:260px;
+        left:15px;
+    }
+    .loading{
+        width:1366px;
+        height:643px;
+        background:url(images/loading3.jpg);
+        position:absolute;
+        z-index: 10;
+        display: block;
+    }
+    #loaded{
+        width:800px;
+        height:15px;
+        margin-left:300px;       
+        border:1px solid teal;
+        position: absolute;
+        bottom:3px;
+        font-size:12px;
+        color:red;
+        text-align: center;
+    }
+    #loadtiao{
+        height:100%;
+        background:red;
+        position: absolute;
+        top:0;
+        bottom:0;
+
+    }
+    #more{
+        width:400px;
+        float: left;
+        position: absolute;
+        bottom:100px;
+        left:15px;
+
+    }
+	.box{
+		font-size: 50px;
+		width:100%;
+		height:100%;
+        position: relative;
+        overflow: hidden;
+        opacity: 0.9;
+        background:url(images/10.jpg);
+	}
+   .zi{
+        width:100px;
+        height:100px;
+       	color:#fff;
+        background:url(images/spider.png) no-repeat 0 0;
+        display:inline-block;
+        font-size: 30px;
+        position: absolute;
+        text-align: center;
+        line-height: 1px;       
+        text-align: center;
+        line-height:80px;
+        bottom:20px;      
+   }
+    .input{
+        position: absolute;
+        top:0;
+        left: 0; 
+    }
+    .again{
+        width:300px;
+        height:200px;
+        background:teal;
+        color:#fff;
+        position:absolute;
+        z-index: 10;
+        display: none;
+    }
+</style>
+
+<body>
+<div class="start">
+    <img src="images/start.jpg" alt="" id="start">
+    <a href="http://www.4399.com/"><img src="images/more.jpg" alt="" id="more"></a>
+</div>
+<div class="loading">
+    <div id="loaded">Loading...
+    <div id="loadtiao"></div>
+    </div>
+</div>
+<div class="again">
+    进入下一关
+</div>
+<div class="box">
+</div>
+
+</dybody>
+<script>
+
+ 
+    var box=document.querySelector('.box');
+    var zimujihe={};
+    var sl=5;
+    var createzimu=function(){
+        do{
+           var zimu=String.fromCharCode(Math.floor(Math.random()*26+97)).toLowerCase(); 
+       }while(zimujihe[zimu])
+        var el=document.createElement('div');     
+        el.className='zi';
+        el.innerHTML=zimu;
+        box.appendChild(el);
+        el.style.left=Math.floor(Math.random()*(box.offsetWidth-el.offsetWidth))+"px";
+        var ran = Math.ceil(Math.random()*10);
+        zimujihe[zimu]={top:0,yuansu:el,off:ran};
+        // zimujihe[zimu]=el;
+    } 
+        for(var i=0;i<sl;i++){
+            createzimu();
+        }    
+     var removezimu=function(zi){
+
+         var el=zimujihe[zi].yuansu;
+         el.parentElement.removeChild(el);
+         delete zimujihe[zi];
+         if(zimujihe === 3){
+             $('.again').fadeIn(500)
+         }
+    }
+    //开始游戏
+    $('#start').click(function(){
+        $('.start').fadeOut(400);
+        timeId=setInterval(diao,10)
+        // setInterval(timeId);
+    })
+    // 载入条
+    $('#loadtiao').animate({
+        width:'800px',
+        
+    },5000).queue(function(){
+          $('.loading').css({display:'none'}).dequeue();
+    })
+
+     document.onkeyup=function(e){
+        if(e.keyCode===32){
+            toggleGame();
+            return;
+        }
+         var key=String.fromCharCode(e.keyCode).toLowerCase();
+         if(zimujihe[key]){
+             removezimu(key);
+             createzimu();
+         }
+     }
+     var h=box.offsetHeight;
+     var diao=function(){
+     var arr=[];
+        // var num=Math.ceil(Math.random()*8)
+        for(var i in zimujihe){
+            var data=zimujihe[i];
+            var el=data.yuansu;
+            data.top+=data.off;
+
+            el.style.top=data.top+"px";
+            if(data.top>h){
+                arr.push(i);
+            }
+
+        } if(arr.length){
+            for(var i=0;i<arr.length;i++){
+                removezimu(arr[i])
+                 createzimu();
+            }
+        }
+     }
+     var timeId=setInterval(diao,100);   //时间编号
+        var toggleGame=function(){
+        if(timeId){
+            clearInterval(timeId);
+            timeId=null;
+        }else{
+            timeId=setInterval(diao,100)
+        }
+     }
+       // var timeId=setInterval(diao,20);
+        document.onclick=function(){
+        if(timeId){
+            clearInterval(timeId);
+            timeId=null;
+        }else{
+            timeId=setInterval(diao,100)
+        }
+     }
+</script>
+</html>
